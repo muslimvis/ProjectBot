@@ -21,6 +21,8 @@ driver = webdriver.Chrome(options=opts)
 driver.maximize_window()
 
 def enter_car(my_car):
+    # Находит поле для ввода и вводит запрашиваемый автомобиль.
+    
     search_field = driver.find_element('xpath',
         '//*[@id="app"]/div/div/header/div[1]/div/div[3]/div/label')
     search_field.click()
@@ -31,6 +33,8 @@ def enter_car(my_car):
 
 
 def get_model_list():
+    # Получает список моделей
+    
     sleep(1.5)
     page_text = driver.page_source.encode('utf-8')
     bs_text = BeautifulSoup(page_text, 'html.parser')
@@ -58,6 +62,8 @@ def get_model_list():
 
 
 def get_generation_dict_list():
+    # Получает словарь из поколений выбранной модели
+    
     generation_field = driver.find_element('xpath',
         '/html/body/div[2]/div/div[2]/div[3]/div[2]/div/div[2]/div/div[2]/div[2]/div[1]/div/div/div/div/div[3]/div[1]/button/span/span')
 
@@ -74,6 +80,8 @@ def get_generation_dict_list():
 
 
 def enter_year(year):
+    # Вводит выбранный год или перечень выбранных лет
+    
     pattern = re.compile(r'^\d{4}$')
     pattern_range = re.compile(r'^\d{4}-\d{4}$')
 
@@ -89,6 +97,8 @@ def enter_year(year):
 
 
 def get_average_price(url):
+    # Находит среднюю цену автомобиля по всем объявлениям
+    
     driver.get(url)
     page_text = driver.page_source.encode('utf-8')
     bs_text = BeautifulSoup(page_text, 'html.parser')
@@ -199,6 +209,8 @@ def answers(message):
 @bot.message_handler(func=lambda message: (dbworker.get_current_state_j(str(message.chat.id)) == config.States.S_START.value)
                                            and message.text.strip().lower() == '/enter_car')
 def after_start(message):
+    # Предоставляет на выбор марки автомобилей
+    
     bot.send_message(message.chat.id, 'Wait a sec...')
 
     driver.get('https://auto.ru')
@@ -226,6 +238,8 @@ def after_start(message):
 @bot.message_handler(
     func=lambda message: (dbworker.get_current_state_j(str(message.chat.id)) == config.States.S_ENTER_CAR.value))
 def get_car(message):
+    # Предоставляет список моделей по выбранной марке атомобиля
+    
     if message.text.lower().strip() in [i.lower().strip() for i in dbworker.get_json_data('list_of_cars')]:
 
         bot.send_message(message.chat.id, 'I\'m doing my best...')
@@ -249,6 +263,8 @@ def get_car(message):
 @bot.message_handler(
     func=lambda message: (dbworker.get_current_state_j(str(message.chat.id)) == config.States.S_ENTER_MODEL.value))
 def get_model(message):
+    # Выбирает необходимую модель и предоставляет список поколений выбранной модели
+    
     if message.text.lower().strip() in [i.lower().strip() for i in dbworker.get_json_data('list_of_available_models')]:
         bot.send_message(message.chat.id, 'I\'m doing my best...')
 
@@ -275,6 +291,8 @@ def get_model(message):
 @bot.message_handler(
     func=lambda message: (dbworker.get_current_state_j(str(message.chat.id)) == config.States.S_ENTER_GENERATION.value))
 def get_generation(message):
+    # Выбирает необходимое поколение и предлагает ввести год или перечень лет
+    
     if message.text.strip() in [i.strip() for i in dbworker.get_json_data('list_of_generations')]:
         lst = [i.strip() for i in dbworker.get_json_data('list_of_generations')]
 
@@ -326,6 +344,8 @@ def get_generation(message):
 @bot.message_handler(
     func=lambda message: (dbworker.get_current_state_j(str(message.chat.id)) == config.States.S_ENTER_YEAR.value))
 def get_year(message):
+    # Запрашивает мощность
+    
     try:
         dbworker.set_json_data('current_url', enter_year(message.text.strip()))
         bot.send_message(message.chat.id, 'Enter power in format\n'
@@ -341,6 +361,8 @@ def get_year(message):
 
 @bot.message_handler(func=lambda message: (dbworker.get_current_state_j(str(message.chat.id)) == config.States.S_ENTER_POWER.value))
 def get_power(message):
+    # Запрашивает километраж
+    
     pattern = re.compile(r'^[1-9]\d*-[1-9]\d*$')
     if pattern.match(message.text.strip()):
         power_from = re.findall(r'\d+', message.text.strip())[0]
@@ -375,6 +397,8 @@ def get_power(message):
 
 @bot.message_handler(func=lambda message: (dbworker.get_current_state_j(str(message.chat.id)) == config.States.S_ENTER_KM.value))
 def get_km(message):
+    # Проверяет коррекность введенных данных и находит среднюю стоимость автомобиля
+    
     pattern_range = re.compile(r'^\d+-[1-9]\d*$')
     url = dbworker.get_json_data('current_url')
     state = True
