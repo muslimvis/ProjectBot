@@ -419,23 +419,8 @@ def get_km(message):
         pass
 
 
-# @server.route('/' + config.token, methods=['POST'])
-# def getMessage():
-#     bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
-#     return "!", 200
-#
-# @server.route("/")
-# def webhook():
-#     bot.remove_webhook()
-#     bot.set_webhook(url='https://stupid-auto-bot.herokuapp.com/' + config.token)
-#     return "!", 200
-#
-# if __name__ == "__main__":
-#     server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
 
-# bot.delete_webhook()
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     bot.infinity_polling()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
